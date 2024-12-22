@@ -10,6 +10,15 @@ services:
       - db
     env_file:
       - .env
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api_rostand.rule=Host(`api-rostand.djokodev.com`)"  
+      - "traefik.http.routers.api_rostand.entrypoints=websecure"
+      - "traefik.http.routers.api_rostand.tls.certResolver=letsencrypt"
+      - "traefik.http.services.api_rostand.loadbalancer.server.port=8000"  
+
   db:
     image: postgres:16
     volumes:
@@ -18,5 +27,12 @@ services:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    networks:
+      - dokploy-network
+
 volumes:
   postgres_data:
+
+networks:
+  dokploy-network:
+    external: true
