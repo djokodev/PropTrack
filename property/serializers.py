@@ -14,7 +14,7 @@ class PropertyImageSerializer(serializers.ModelSerializer):
 
 class PropertySerializer(serializers.ModelSerializer):
     images = PropertyImageSerializer(many=True, read_only=True)
-    current_owner = serializers.ReadOnlyField(source="current_owner.phone_number")
+    current_owner = serializers.SerializerMethodField()
 
     class Meta:
         model = Property
@@ -32,13 +32,13 @@ class PropertySerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["status", "current_owner"]
 
+    def get_current_owner(self, obj):
+        return obj.current_owner.last_name if obj.current_owner else None
+
 
 class PropertyTransferSerializer(serializers.ModelSerializer):
-    from_user = serializers.ReadOnlyField(source="from_user.phone_number")
-    to_user = serializers.SlugRelatedField(
-        slug_field="phone_number",
-        queryset=User.objects.all(),
-    )
+    from_user = serializers.SerializerMethodField()
+    to_user = serializers.SerializerMethodField()
     property_details = PropertySerializer(source="property", read_only=True)
 
     class Meta:
@@ -55,3 +55,11 @@ class PropertyTransferSerializer(serializers.ModelSerializer):
             "transfer_amount",
         ]
         read_only_fields = ["transfer_date", "status"]
+
+    def get_from_user(self, obj):
+        return str(obj.from_user.last_name) if obj.from_user.phone_number else None
+
+    def get_to_user(self, obj):
+        if obj.to_user.phone_number:
+            return str(obj.to_user.phone_number)
+        return None
