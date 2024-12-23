@@ -31,6 +31,10 @@ SECRET_KEY = "django-insecure--+wpsdqg-a7sj+gr1ww+v7ygr_ay5$*k81pnzaa8i8xl+6jf4%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG")
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://api-rostand.djokodev.com",
+]
+
 ALLOWED_HOSTS = ["api-rostand.djokodev.com", "localhost", "127.0.0.1"]
 
 
